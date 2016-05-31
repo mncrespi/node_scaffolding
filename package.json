@@ -1,0 +1,101 @@
+{
+  "name": "node_scaffolding",
+  "version": "1.0.0",
+  "description": "",
+  "author": "Matias Crespi <crespimatiasnicolas@gmail.com>",
+  "main": "index.js",
+  "private": false,
+  "engines": {
+    "node": "5.11.x",
+    "npm": "3.8.x"
+  },
+  "scripts": {
+    "start": "gulp serve",
+    "build": "gulp",
+    "lint": "gulp lint",
+    "test": "gulp mocha",
+    "commit": "git-cz"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:matcres/node_scaffolding.git"
+  },
+  "keywords": [
+    "express",
+    "node",
+    "node.js",
+    "mongodb",
+    "mongoose",
+    "es6",
+    "mocha",
+    "REST",
+    "API",
+    "boilerplate"
+  ],
+  "dependencies": {
+    "bluebird": "^3.1.4",
+    "body-parser": "^1.14.2",
+    "compression": "^1.6.1",
+    "cookie-parser": "^1.4.1",
+    "cors": "^2.7.1",
+    "debug": "^2.2.0",
+    "express": "~4.13.1",
+    "express-validation": "^0.6.0",
+    "express-winston": "^1.2.0",
+    "http-status": "^0.2.0",
+    "joi": "^8.1.0",
+    "lodash": "^4.13.1",
+    "method-override": "^2.3.5",
+    "mongoose": "^4.4.19",
+    "morgan": "^1.7.0",
+    "winston": "^2.1.1"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.9.0",
+    "babel-core": "^6.9.0",
+    "babel-plugin-add-module-exports": "^0.2.1",
+    "babel-preset-es2015": "^6.9.0",
+    "babel-preset-stage-2": "^6.5.0",
+    "chai": "^3.4.1",
+    "commitizen": "^2.8.1",
+    "cz-conventional-changelog": "^1.1.6",
+    "del": "^2.2.0",
+    "eslint": "^2.10.2",
+    "ghooks": "^1.2.1",
+    "gulp": "^3.9.1",
+    "gulp-babel": "6.1.2",
+    "gulp-env": "^0.4.0",
+    "gulp-eslint": "^2.0.0",
+    "gulp-load-plugins": "^1.2.0",
+    "gulp-mocha": "^2.2.0",
+    "gulp-newer": "^1.1.0",
+    "gulp-nodemon": "^2.0.6",
+    "gulp-plumber": "^1.0.1",
+    "gulp-sourcemaps": "^1.6.0",
+    "gulp-util": "^3.0.7",
+    "mocha": "^2.3.4",
+    "run-sequence": "^1.1.5",
+    "supertest": "^1.2.0",
+    "supertest-as-promised": "^3.1.0",
+    "validate-commit-msg": "^2.6.1"
+  },
+  "license": "MIT",
+  "config": {
+    "ghooks": {
+      "pre-commit": "npm run lint && npm test",
+      "commit-msg": "validate-commit-msg"
+    },
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  },
+  "babel": {
+    "presets": [
+      "es2015",
+      "stage-2"
+    ],
+    "plugins": [
+      "add-module-exports"
+    ]
+  }
+}
