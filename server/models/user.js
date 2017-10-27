@@ -1,3 +1,4 @@
+// todo: update model
 import Promise from 'bluebird'
 import mongoose from 'mongoose'
 import httpStatus from 'http-status'
@@ -49,12 +50,14 @@ UserSchema.statics = {
    */
   get(id) {
     return this.findById(id)
-      .execAsync().then((user) => {
+      .execAsync()
+      .then((user) => {
         if (user) {
           return user
+        } else {
+          const err = new APIError('No such user exists!', httpStatus.NOT_FOUND)
+          return Promise.reject(err)
         }
-        const err = new APIError('No such user exists!', httpStatus.NOT_FOUND)
-        return Promise.reject(err)
       })
   },
 
