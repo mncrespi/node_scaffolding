@@ -1,13 +1,13 @@
-import path from 'path';
-import _ from 'lodash';
+import path from 'path'
+import _ from 'lodash'
 
-const env = process.env.NODE_ENV || 'development';
-const config = require(`./${env}`);
+const env = process.env.NODE_ENV || 'development'
+const config = require(`./${env}`)
 
 const defaults = {
-	root: path.join(__dirname, '/..')
-};
+	root: path.join(__dirname, '/..'),
+}
 
-_.assign(config, defaults);
+_.assign(config, defaults)
 
-export default config;
+export default config
