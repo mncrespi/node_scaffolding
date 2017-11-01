@@ -1,13 +1,17 @@
-// todo: update config
 import winston from 'winston'
+import config from './env'
 
-const logger = new (winston.Logger)({
-	transports: [
-		new (winston.transports.Console)({
-			json: true,
-			colorize: true,
-		}),
-	],
+export default new winston.Logger({
+  level: config.logger.level,
+  levels: winston.config.syslog.levels,
+  transports: [
+    new (winston.transports.Console)({
+      colorize: true,
+      timestamp: true,
+      prettyPrint: config.logger.prettyPrint,
+    }),
+    new (winston.transports.File)({
+      filename: config.logger.logFile,
+    }),
+  ],
 })
-
-export default logger
