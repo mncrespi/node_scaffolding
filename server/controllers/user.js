@@ -1,4 +1,5 @@
 import User from '../models/user'
+import moment from 'moment'
 
 /**
  * Load user and append to req.
@@ -34,13 +35,17 @@ function get(req, res) {
  */
 function create(req, res, next) {
 	const user = new User({
+		name: req.body.name,
+		surname: req.body.surname,
+		email: req.body.email,
 		username: req.body.username,
-		mobileNumber: req.body.mobileNumber,
+		password: req.body.password,
+		mobile_number: req.body.mobile_number,
 	})
 
 	user.saveAsync()
 		.then((savedUser) => res.json(savedUser))
-		.error((e) => next(e))
+		.catch((e) => next(e))
 }
 
 /**
@@ -52,12 +57,17 @@ function create(req, res, next) {
  */
 function update(req, res, next) {
 	const user = req.user
-	user.username = req.body.username
-	user.mobileNumber = req.body.mobileNumber
+  user.name = req.body.name
+  user.surname = req.body.surname
+  user.email = req.body.email
+  user.username = req.body.username
+  user.password = req.body.password
+  user.mobile_number = req.body.mobile_number
+  user.updated_at = moment()
 
 	user.saveAsync()
 		.then((savedUser) => res.json(savedUser))
-		.error((e) => next(e))
+		.catch((e) => next(e))
 }
 
 /**
@@ -71,7 +81,7 @@ function list(req, res, next) {
 	const { limit = 50, skip = 0, } = req.query
 	User.list({ limit, skip, })
     .then((users) => res.json(users))
-		.error((e) => next(e))
+		.catch((e) => next(e))
 }
 
 /**
@@ -85,7 +95,7 @@ function remove(req, res, next) {
 	const user = req.user
 	user.removeAsync()
 		.then((deletedUser) => res.json(deletedUser))
-		.error((e) => next(e))
+		.catch((e) => next(e))
 }
 
 export default {
