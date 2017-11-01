@@ -25,7 +25,7 @@ describe('## Misc', () => {
 				.get('/api/users/56z787zzz67fc')
 				.expect(httpStatus.INTERNAL_SERVER_ERROR)
 				.then((res) => {
-					expect(res.body.message).to.equal('Internal Server Error')
+					expect(res.status).to.equal(500)
 					done()
 				})
 		})
@@ -38,7 +38,7 @@ describe('## Misc', () => {
 				})
 				.expect(httpStatus.BAD_REQUEST)
 				.then((res) => {
-					expect(res.body.message).to.equal('"username" is required')
+					expect(res.status).to.equal(400)
 					done()
 				})
 		})

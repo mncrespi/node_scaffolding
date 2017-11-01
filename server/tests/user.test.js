@@ -8,8 +8,12 @@ chai.config.includeStack = true
 
 describe('## User APIs', () => {
 	let user = {
-		username: 'KK123',
-		mobileNumber: '1234567890',
+    name: 'Matias',
+    surname: 'Crespi',
+    email: 'mat.cres@gmail.com',
+    username: 'mncrespi',
+    password: 'MyPass123',
+    mobile_number: '1234567890',
 	}
 
 	describe('# POST /api/users', () => {
@@ -20,7 +24,7 @@ describe('## User APIs', () => {
 				.expect(httpStatus.OK)
 				.then((res) => {
 					expect(res.body.username).to.equal(user.username)
-					expect(res.body.mobileNumber).to.equal(user.mobileNumber)
+					expect(res.body.mobile_number).to.equal(user.mobile_number)
 					user = res.body
 					done()
 				})
@@ -34,7 +38,7 @@ describe('## User APIs', () => {
 				.expect(httpStatus.OK)
 				.then((res) => {
 					expect(res.body.username).to.equal(user.username)
-					expect(res.body.mobileNumber).to.equal(user.mobileNumber)
+					expect(res.body.mobile_number).to.equal(user.mobile_number)
 					done()
 				})
 		})
@@ -52,14 +56,14 @@ describe('## User APIs', () => {
 
 	describe('# PUT /api/users/:userId', () => {
 		it('should update user details', (done) => {
-			user.username = 'KK'
+			user.username = 'matcres'
 			request(app)
 				.put(`/api/users/${user._id}`)
 				.send(user)
 				.expect(httpStatus.OK)
 				.then((res) => {
-					expect(res.body.username).to.equal('KK')
-					expect(res.body.mobileNumber).to.equal(user.mobileNumber)
+					expect(res.body.username).to.equal('matcres')
+					expect(res.body.mobile_number).to.equal(user.mobile_number)
 					done()
 				})
 		})
@@ -83,8 +87,8 @@ describe('## User APIs', () => {
 				.delete(`/api/users/${user._id}`)
 				.expect(httpStatus.OK)
 				.then((res) => {
-					expect(res.body.username).to.equal('KK')
-					expect(res.body.mobileNumber).to.equal(user.mobileNumber)
+					expect(res.body.username).to.equal('matcres')
+					expect(res.body.mobile_number).to.equal(user.mobile_number)
 					done()
 				})
 		})
