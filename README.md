@@ -1,22 +1,20 @@
 # Node Scaffolding
-Express & Mongo DB & Redis-Cache REST API in ES6
+Express & Mongo DB REST API in ES6/7
  
 
 ## Working on:
-- Redis-Cache
-- JWT with Redis
 - Users-Roles
-- Admin-Dashboard
 
 
 ### Features
 
 - ES6
-- Eslint V2
+- JWT and express-JWT
+- esLint V4
 - Nodemon
 - debug
 - bluebird
-- express-validation
+- JOI with express-validation
 - CORS
 - MongoDB
 
