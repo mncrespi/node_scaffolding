@@ -20,7 +20,7 @@ describe('## Authorization', () => {
         .expect(httpStatus.OK)
         .then((res) => {
           const reg = new RegExp('^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_.+/=]*$', 'g')
-          const matchJWT = (reg.exec(res.body.token)) ? true : false
+          const matchJWT = (reg.exec(res.body.token)) ? true : false // eslint-disable-line no-unneeded-ternary
           expect(res.status).to.equal(200)
           expect(true).to.equal(matchJWT)
           expect(res.body.token_type).to.equal('Bearer')
