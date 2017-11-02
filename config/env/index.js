@@ -1,5 +1,5 @@
-import path from 'path'
-import _ from 'lodash'
+import path                     from 'path'
+import _                        from 'lodash'
 
 const env = process.env.NODE_ENV || 'development'
 const config = require(`./${env}`)
