@@ -24,7 +24,7 @@ if (config.env === 'development') {
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true, }))
 
-app.use(cookieParser())
+app.use(cookieParser(config.cookieParser.secret))
 app.use(compress())
 app.use(methodOverride())
 

@@ -11,4 +11,7 @@ export default {
     secret: 'shhhhhhhh',
     expire: 28800, //in Seconds ( 8Hs )
   },
+  cookieParser: {
+    secret: 'shhhhhhhh',
+  },
 }
