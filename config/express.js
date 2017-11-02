@@ -7,6 +7,7 @@ import cors                           from 'cors'
 import express                        from 'express'
 import expressValidation              from 'express-validation'
 import expressWinston                 from 'express-winston'
+import helmet                         from 'helmet'
 import httpStatus                     from 'http-status'
 import logger                         from 'morgan'
 import methodOverride                 from 'method-override'
@@ -26,6 +27,9 @@ app.use(bodyParser.urlencoded({ extended: true, }))
 app.use(cookieParser())
 app.use(compress())
 app.use(methodOverride())
+
+// secure apps by setting various HTTP headers
+app.use(helmet())
 
 // disable 'X-Powered-By' header in response
 app.disable('x-powered-by')
