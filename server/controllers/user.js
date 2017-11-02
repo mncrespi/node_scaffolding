@@ -1,5 +1,5 @@
-import User from '../models/user'
-import moment from 'moment'
+import User                 from '../models/user'
+import moment               from 'moment'
 
 /**
  * Load user and append to req.
