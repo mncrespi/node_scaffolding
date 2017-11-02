@@ -11,7 +11,7 @@ const paths = {
     './**/*.js',
     '!dist/**',
     '!node_modules/**',
-    '!assets/**',
+    // '!assets/**',
   ],
   nonJs: [
     './package.json',
@@ -86,7 +86,7 @@ gulp.task('nodemon', [
     ext: 'js',
     ignore: [
       'node_modules/**/*.js',
-      'assets/**/*',
+      // 'assets/**/*',
       'dist/**/*.js',
     ],
     tasks: [
@@ -100,7 +100,6 @@ gulp.task('nodemon', [
 
 // triggers mocha test
 gulp.task('test', ['set-env'], () => { //eslint-disable-line comma-dangle
-                                       // let reporters
   let  exitCode = 0
 
   return gulp.src([paths.tests], { read: false }) //eslint-disable-line comma-dangle
@@ -141,10 +140,8 @@ gulp.task('serve', ['clean'], () => runSequence('nodemon')) //eslint-disable-lin
 gulp.task('default', [
   'clean',
 ], () => {
-  runSequence(
-    [
-      'copy',
-      'babel',
-    ]
-  )
+  runSequence([
+    'copy',
+    'babel',
+  ])
 })
