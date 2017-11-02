@@ -7,4 +7,8 @@ export default {
     prettyPrint: true,
     logFile: '/var/log/node_scaffolding.log',
   },
+  jwt: {
+    secret: 'shhhhhhhh',
+    expire: 28800, //in Seconds ( 8Hs )
+  },
 }
