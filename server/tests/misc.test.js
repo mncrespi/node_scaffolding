@@ -3,11 +3,17 @@ import httpStatus from 'http-status'
 import chai from 'chai'
 import { expect, } from 'chai'
 import app from '../../index'
+import jwt from 'jsonwebtoken'
+import config from '../../config/env'
 
 chai.config.includeStack = true
 
 describe('## Misc', () => {
-	describe('# GET /api/404', () => {
+  // Create fake token for test protected endPoints
+  const token = jwt.sign({}, config.jwt.secret, { expiresIn: config.jwt.expire, })
+
+
+  describe('# GET /api/404', () => {
 		it('should return 404 status', (done) => {
 			request(app)
 				.get('/api/404')
@@ -20,9 +26,10 @@ describe('## Misc', () => {
 	})
 
 	describe('# Error Handling', () => {
-		it('should handle mongoose CastError - Cast to ObjectId failed', (done) => {
+    it('should handle mongoose CastError - Cast to ObjectId failed', (done) => {
 			request(app)
 				.get('/api/users/56z787zzz67fc')
+        .set('Authorization', `Bearer ${token}`)
 				.expect(httpStatus.INTERNAL_SERVER_ERROR)
 				.then((res) => {
 					expect(res.status).to.equal(500)
@@ -33,6 +40,7 @@ describe('## Misc', () => {
 		it('should handle express validation error - username is required', (done) => {
 			request(app)
 				.post('/api/users')
+        .set('Authorization', `Bearer ${token}`)
 				.send({
 					mobileNumber: '1234567890',
 				})
