@@ -1,17 +1,19 @@
-import jwt                    from 'jsonwebtoken'
+import APIError               from '../helpers/APIError'
 import config                 from '../../config/env'
+import httpStatus             from 'http-status'
+import jwt                    from 'jsonwebtoken'
 import logger                 from '../../config/winston'
 import User                   from '../models/user'
-import httpStatus             from 'http-status'
 
 
 /**
  * Returns jwt token if valid username and password is provided
  * @param req - Request
  * @param res - Response
+ * @param next - Next Middleware
  * @returns {*}
  */
-function login(req, res) {
+function login(req, res, next) {
   User.findOne({
     username: req.body.username,
   }, (err, user) => {
@@ -19,13 +21,8 @@ function login(req, res) {
 
     if (!user) {
       logger.log('debug', 'API::Auth::JWT:User Not Found')
-      return res.status(401).json({
-        status: 401,
-        userMessage: httpStatus[401],
-        developerMessage: '',
-        errorCode: 0,
-        moreInfo: '',
-      })
+      const err = new APIError(httpStatus[401], 401)
+      next(err)
     } else {
       // Check if password matches
       user.comparePassword(req.body.password, (err, isMatch) => {
@@ -47,13 +44,8 @@ function login(req, res) {
           })
         } else {
           logger.log('debug', 'API::Auth::JWT:Password did not match')
-          return res.status(401).json({
-            status: 401,
-            userMessage: httpStatus[401],
-            developerMessage: '',
-            errorCode: 0,
-            moreInfo: '',
-          })
+          const err = new APIError(httpStatus[401], 401)
+          next(err)
         }
       })
     }
