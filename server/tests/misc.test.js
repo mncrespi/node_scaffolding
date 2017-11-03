@@ -30,9 +30,9 @@ describe('## Misc', () => {
 			request(app)
 				.get('/api/users/56z787zzz67fc')
         .set('Authorization', `Bearer ${token}`)
-				.expect(httpStatus.INTERNAL_SERVER_ERROR)
+				.expect(httpStatus.NOT_FOUND)
 				.then((res) => {
-					expect(res.status).to.equal(500)
+					expect(res.status).to.equal(404)
 					done()
 				})
 		})

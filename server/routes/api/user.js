@@ -22,7 +22,5 @@ router.route('/:userId')
 	/** DELETE /api/users/:userId - Delete user */
 	.delete(userCtrl.remove)
 
-/** Load user when API with userId route parameter is hit */
-router.param('userId', userCtrl.load)
 
 export default router
