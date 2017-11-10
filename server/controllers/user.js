@@ -1,5 +1,4 @@
 import APIError             from '../helpers/APIError'
-import httpStatus           from 'http-status'
 import User                 from '../models/user'
 import moment               from 'moment'
 
@@ -17,7 +16,7 @@ function get(req, res, next) {
       return res.json(user)
     })
     .catch((e) => {
-      const err = new APIError(httpStatus[404], 404)
+      const err = APIError(404)
       next(err)
     })
 }
@@ -67,7 +66,7 @@ function update(req, res, next) {
         .catch((e) => next(e))
     })
     .catch((e) => {
-      const err = new APIError(httpStatus[404], 404)
+      const err = APIError(404)
       next(err)
     })
 }
@@ -101,7 +100,7 @@ function remove(req, res, next) {
         .catch((e) => next(e))
     })
     .catch((e) => {
-      const err = new APIError(httpStatus[404], 404)
+      const err = APIError(404)
       next(err)
     })
 }

@@ -1,6 +1,5 @@
 import APIError               from '../helpers/APIError'
 import config                 from '../../config/env'
-import httpStatus             from 'http-status'
 import jwt                    from 'jsonwebtoken'
 import logger                 from '../../config/winston'
 import User                   from '../models/user'
@@ -21,7 +20,7 @@ function login(req, res, next) {
 
     if (!user) {
       logger.log('debug', 'API::Auth::JWT:User Not Found')
-      const err = new APIError(httpStatus[401], 401)
+      const err = APIError(401)
       next(err)
     } else {
       // Check if password matches
@@ -44,7 +43,7 @@ function login(req, res, next) {
           })
         } else {
           logger.log('debug', 'API::Auth::JWT:Password did not match')
-          const err = new APIError(httpStatus[401], 401)
+          const err = APIError(401)
           next(err)
         }
       })

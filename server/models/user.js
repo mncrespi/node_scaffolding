@@ -3,7 +3,6 @@ import moment               from 'moment'
 import mongoose             from 'mongoose'
 import Promise              from 'bluebird'
 import APIError             from '../helpers/APIError'
-import httpStatus           from 'http-status'
 
 
 const Schema = mongoose.Schema
@@ -121,7 +120,7 @@ UserSchema.statics = {
         if (user) {
           return user
         } else {
-          const err = new APIError('No such user exists!', httpStatus.NOT_FOUND)
+          const err = APIError(404, 'No such user exists!')
           return Promise.reject(err)
         }
       })

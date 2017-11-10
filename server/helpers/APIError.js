@@ -31,4 +31,16 @@ class APIError extends ExtendableError {
 	}
 }
 
-export default APIError
+/**
+ * Default Function, Parser Error
+ * @param {number} status - Status Code
+ * @param {null|string} message - Error Message
+ * @param {boolean} isPublic - Public Error
+ * @return {APIError}
+ */
+export default function (status = httpStatus.INTERNAL_SERVER_ERROR, message = null, isPublic = false) {
+  // Your Code Here...
+  message = (message) ? message : httpStatus[status]
+
+  return new APIError(message, status, isPublic)
+}
