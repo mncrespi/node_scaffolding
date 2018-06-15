@@ -1,6 +1,6 @@
-import APIError             from '../helpers/APIError'
-import User                 from '../models/user'
-import moment               from 'moment'
+import APIError from '../helpers/APIError'
+import User from '../models/user'
+import moment from 'moment'
 
 
 /**
@@ -29,18 +29,18 @@ function get(req, res, next) {
  * @return {User} - User's Object
  */
 function create(req, res, next) {
-	const user = new User({
-		name: req.body.name,
-		surname: req.body.surname,
-		email: req.body.email,
-		username: req.body.username,
-		password: req.body.password,
-		mobile_number: req.body.mobile_number,
-	})
+  const user = new User({
+    name: req.body.name,
+    surname: req.body.surname,
+    email: req.body.email,
+    username: req.body.username,
+    password: req.body.password,
+    mobile_number: req.body.mobile_number,
+  })
 
-	user.saveAsync()
-		.then((savedUser) => res.json(savedUser))
-		.catch((e) => next(e))
+  user.saveAsync()
+    .then((savedUser) => res.json(savedUser))
+    .catch((e) => next(e))
 }
 
 /**
@@ -79,10 +79,10 @@ function update(req, res, next) {
  * @return {User[]} - List of User's Objects
  */
 function list(req, res, next) {
-	const { limit = 50, skip = 0, } = req.query
-	User.list({ limit, skip, })
+  const { limit = 50, skip = 0, } = req.query
+  User.list({ limit, skip, })
     .then((users) => res.json(users))
-		.catch((e) => next(e))
+    .catch((e) => next(e))
 }
 
 /**

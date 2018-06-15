@@ -1,9 +1,9 @@
-import request                  from 'supertest-as-promised'
-import httpStatus               from 'http-status'
-import chai                     from 'chai'
-import { expect, }              from 'chai'
-import app                      from '../../index'
-import config                   from '../../config/env'
+import request from 'supertest-as-promised'
+import httpStatus from 'http-status'
+import chai from 'chai'
+import { expect, } from 'chai'
+import app from '../../index'
+import config from '../../config/env'
 
 chai.config.includeStack = true
 
@@ -20,17 +20,18 @@ describe('## Authorization', () => {
         .expect(httpStatus.OK)
         .then((res) => {
           const reg = new RegExp('^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_.+/=]*$', 'g')
-          const matchJWT = (reg.exec(res.body.token)) ? true : false // eslint-disable-line no-unneeded-ternary
+          const matchJWT = !!(reg.exec(res.body.token))
           expect(res.status).to.equal(200)
           expect(true).to.equal(matchJWT)
           expect(res.body.token_type).to.equal('Bearer')
           expect(res.body.expires_in).to.equal(config.jwt.expire)
           done()
         })
+        .catch((e) => done(new Error(e)))
     })
   })
 
-	describe('# Error Handling', () => {
+  describe('# Error Handling', () => {
     it('should handle express JWT validation error - Error 401', (done) => {
       request(app)
         .get('/api/users')
@@ -39,6 +40,7 @@ describe('## Authorization', () => {
           expect(res.status).to.equal(401)
           done()
         })
+        .catch((e) => done(new Error(e)))
     })
-	})
+  })
 })

@@ -1,8 +1,8 @@
-import APIError               from '../helpers/APIError'
-import config                 from '../../config/env'
-import jwt                    from 'jsonwebtoken'
-import logger                 from '../../config/winston'
-import User                   from '../models/user'
+import APIError from '../helpers/APIError'
+import config from '../../config/env'
+import jwt from 'jsonwebtoken'
+import logger from '../../config/winston'
+import User from '../models/user'
 
 
 /**
@@ -50,7 +50,6 @@ function login(req, res, next) {
     }
   })
 }
-
 
 
 export default {

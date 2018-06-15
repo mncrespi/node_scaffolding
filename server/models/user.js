@@ -1,8 +1,8 @@
-import bcrypt               from 'bcrypt'
-import moment               from 'moment'
-import mongoose             from 'mongoose'
-import Promise              from 'bluebird'
-import APIError             from '../helpers/APIError'
+import bcrypt from 'bcrypt'
+import moment from 'moment'
+import mongoose from 'mongoose'
+import Promise from 'bluebird'
+import APIError from '../helpers/APIError'
 
 
 const Schema = mongoose.Schema

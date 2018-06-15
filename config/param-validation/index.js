@@ -1,6 +1,6 @@
 /** API Validations */
-import apiUsers                   from './api/users'
-import apiAuth                    from './api/auth'
+import apiUsers from './api/users'
+import apiAuth from './api/auth'
 
 
 export default {
@@ -11,7 +11,7 @@ export default {
   /** /api/auth */
   apiAuth: apiAuth,
 
-	/** users */
-	createUser: apiUsers.createUser,
-	updateUser: apiUsers.updateUser,
+  /** users */
+  createUser: apiUsers.createUser,
+  updateUser: apiUsers.updateUser,
 }

@@ -1,7 +1,7 @@
 export default {
-	env: 'development',
-	db: 'mongodb://localhost/node_scaffolding',
-	port: 3000,
+  env: 'development',
+  db: 'mongodb://localhost/node_scaffolding',
+  port: 3000,
   logger: {
     level: 'debug',
     prettyPrint: true,
