@@ -13,6 +13,8 @@ import logger from 'morgan'
 import methodOverride from 'method-override'
 import routes from '../server/routes'
 import winstonInstance from './winston'
+import oAuthComponents        from '../server/controllers/oauth'
+
 
 const app = express()
 
@@ -51,6 +53,9 @@ if (config.env === 'development') {
 
 // mount all routes on /api path
 app.use('/', routes)
+
+// mount oAuthComponents
+oAuthComponents(app)
 
 // if error is not an instanceOf APIError, convert it.
 app.use((err, req, res, next) => {

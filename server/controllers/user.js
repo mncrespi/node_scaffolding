@@ -1,5 +1,5 @@
 import APIError from '../helpers/APIError'
-import User from '../models/user'
+import User from '../models/oauth/User'
 import moment from 'moment'
 
 
