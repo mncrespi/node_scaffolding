@@ -2,6 +2,8 @@ import mongoose from 'mongoose'
 
 const Schema = mongoose.Schema
 
+// todo: rename expires to expires_at
+
 const OAuthAccessTokenSchema = new Schema({
   access_token: String,
   expires: Date,

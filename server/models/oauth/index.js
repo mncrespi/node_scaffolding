@@ -5,12 +5,21 @@ import OAuthRefreshToken from './OAuthRefreshToken'
 import OAuthScope from './OAuthScope'
 import User from './User'
 
+// export default {
+//   OAuthAccessToken: OAuthAccessToken,
+//   OAuthAuthorizationCode: OAuthAuthorizationCode,
+//   OAuthClient: OAuthClient,
+//   OAuthRefreshToken: OAuthRefreshToken,
+//   OAuthScope: OAuthScope,
+//   User: User,
+// }
+
 export default {
-  OAuthAccessToken: OAuthAccessToken,
-  OAuthAuthorizationCode: OAuthAuthorizationCode,
-  OAuthClient: OAuthClient,
-  OAuthRefreshToken: OAuthRefreshToken,
-  OAuthScope: OAuthScope,
-  User: User,
+  OAuthAccessToken,
+  OAuthAuthorizationCode,
+  OAuthClient,
+  OAuthRefreshToken,
+  OAuthScope,
+  User,
 }
 
