@@ -1,0 +1,7 @@
+// Password: MyPass123
+{
+    "_id" : ObjectId("57382dd6e05342a003543d54"),
+    "username" : "admin",
+    "password" : "$2a$10$VAQbhQu.XR6eFhPepjUcheoXL/2aWoDw1SssroXFaqXdH5qfCQi4y",
+    "__v" : NumberInt(0)
+}
