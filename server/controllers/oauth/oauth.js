@@ -6,7 +6,7 @@
  */
 
 import OAuth2Server from 'oauth2-server'
-import models from './mongo-models'
+import models from './models'
 import OAuthConfig from '../../../config/oauth'
 import { assign, } from 'lodash'
 

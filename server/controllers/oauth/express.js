@@ -31,7 +31,7 @@ export default function (app) {
       })
       .catch((err) => {
         logger.error('Error on /oauth2/token', err.code, err.message, err.name)
-        return next(err)
+        return next(APIError(err.code, err.message, err.name))
       })
   })
 
@@ -73,13 +73,10 @@ export default function (app) {
       })
       .then((model) => {
         if (!model)
-          return next(new APIError(404, 'Invalid Client'))
+          return next(APIError(404, 'Invalid Client'))
         else
           return res.json(model)
       })
       .catch((err) => next(err))
   })
-
-  /* Setup the oAuth error handling */
-  // expressApp.use(expressApp.oauth.errorHandler())
 }
