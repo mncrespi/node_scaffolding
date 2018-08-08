@@ -1,6 +1,5 @@
 /**
  * DOC: https://oauth2-server.readthedocs.io/en/latest/model/spec.html#model-specification
- * todo: verify methods WIP
  * todo: Handle Errors
  * todo: Set Methods on DBModels
  */

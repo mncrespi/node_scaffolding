@@ -10,6 +10,11 @@ import logger from '../../../config/winston'
 // todo: Error 503, Invalid Credentials
 
 export default function (app) {
+  /**
+   * -----------------------------
+   * Token Authentication:
+   * ------------------------------
+   */
   app.all('/oauth2/token', (req, res, next) => {
     const request = new Request(req)
     const response = new Response(res)
@@ -30,6 +35,13 @@ export default function (app) {
       })
   })
 
+  /**
+   * -----------------------------
+   * Authorise Code:
+   * DOC: http://oauth2-server.readthedocs.io/en/latest/api/oauth2-server.html#authorize-request-response-options-callback
+   * DOC: https://www.digitalocean.com/community/tutorials/an-introduction-to-oauth-2
+   * ------------------------------
+   */
   app.post('/oauth2/authorise', (req, res, next) => {
     const request = new Request(req)
     const response = new Response(res)
@@ -47,16 +59,17 @@ export default function (app) {
   })
 
   app.get('/oauth2/authorise', (req, res, next) => {
-    return db.OAuthClient
+    const {
+      client_id = null,
+      redirect_uri = null,
+    } = req.query
+
+    logger.log('debug', 'oauth2::authorise::client_id:%j::redirect_uri:%j', client_id, redirect_uri)
+
+    db.OAuthClient
       .findOne({
-        where: {
-          client_id: req.query.client_id,
-          redirect_uri: req.query.redirect_uri,
-        },
-        attributes: [
-          'id',
-          'name',
-        ],
+        client_id: client_id,
+        redirect_uri: redirect_uri,
       })
       .then((model) => {
         if (!model)
@@ -66,4 +79,7 @@ export default function (app) {
       })
       .catch((err) => next(err))
   })
+
+  /* Setup the oAuth error handling */
+  // expressApp.use(expressApp.oauth.errorHandler())
 }

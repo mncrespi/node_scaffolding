@@ -15,7 +15,7 @@ const
   extendedGrantTypes = {},
   scopes = undefined,
   grants = [
-    'authorization_code',
+    'authorization_code', // WIP
     'password',
     'refresh_token',
     'client_credentials',
