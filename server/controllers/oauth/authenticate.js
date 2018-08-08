@@ -1,6 +1,8 @@
 import { Request, Response, } from 'oauth2-server'
 import oAuth from './oauth'
 import logger from '../../../config/winston'
+import OAuthOptions from '../../../config/oauth'
+import { assign, } from 'lodash'
 
 
 /**
@@ -12,6 +14,10 @@ export default function (options) {
   return function (req, res, next) {
     const request = new Request(req)
     const response = new Response(res)
+
+    options = assign(options, OAuthOptions.options.authenticate)
+
+    logger.log('debug', 'Authentication::Options::%j', options)
 
     oAuth.authenticate(request, response, options = {})
       .then((token) => {

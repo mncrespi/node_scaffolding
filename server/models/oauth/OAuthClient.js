@@ -3,6 +3,9 @@ import mongoose from 'mongoose'
 
 const Schema = mongoose.Schema
 
+// Set mongoose.Promise, http://mongoosejs.com/docs/promises.html
+mongoose.Promise = Promise
+
 const OAuthClientSchema = new Schema({
   name: String,
   client_id: String,

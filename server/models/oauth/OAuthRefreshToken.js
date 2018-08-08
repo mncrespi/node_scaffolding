@@ -1,7 +1,11 @@
 import mongoose from 'mongoose'
+
 const Schema = mongoose.Schema
 
-const RefreshTokenSchema = new Schema({
+// Set mongoose.Promise, http://mongoosejs.com/docs/promises.html
+mongoose.Promise = Promise
+
+const OAuthRefreshTokenSchema = new Schema({
   refresh_token: String,
   expires: Date,
   scope: String,
@@ -15,4 +19,4 @@ const RefreshTokenSchema = new Schema({
   },
 })
 
-export default mongoose.model('RefreshToken', RefreshTokenSchema)
+export default mongoose.model('OAuthRefreshToken', OAuthRefreshTokenSchema)

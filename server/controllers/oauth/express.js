@@ -1,9 +1,10 @@
-import db from '../../models/oauth/index'
+import { Request, Response, } from 'oauth2-server'
+import db from '../../models/oauth'
 import oauth from './oauth'
+import OAuthConfig from '../../../config/oauth'
 import APIError from '../../helpers/APIError'
 import logger from '../../../config/winston'
-import { Request, Response, } from 'oauth2-server'
-// import moment from 'moment'
+
 
 // todo: URLs
 // todo: Error 503, Invalid Credentials
@@ -16,23 +17,17 @@ export default function (app) {
     oauth
       .token(request, response)
       .then((token) => {
-        // Get remaining time in seconds
-        // const expire_in = moment.duration(moment(token.accessTokenExpiresAt).diff(moment())).asSeconds()
-
-        // todo: config token expires_in
-        logger.log('debug', 'UserAuthenticated::%j', token)
-
         return res.json({
           access_token: token.access_token,
           token_type: 'Bearer',
-          expires_in: 3600, // this value is default for oAuth2
+          expires_in: OAuthConfig.options.token.accessTokenLifetime,
           refresh_token: (token.refresh_token),
         })
       })
       .catch((err) => {
-      logger.error('Error on /oauth2/token', err.code, err.message, err.name)
-      return next(err)
-    })
+        logger.error('Error on /oauth2/token', err.code, err.message, err.name)
+        return next(err)
+      })
   })
 
   app.post('/oauth2/authorise', (req, res, next) => {

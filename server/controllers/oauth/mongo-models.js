@@ -1,15 +1,16 @@
 /**
  * DOC: https://oauth2-server.readthedocs.io/en/latest/model/spec.html#model-specification
- * todo: verify methods
- * todo: Errors
+ * todo: verify methods WIP
+ * todo: Handle Errors
+ * todo: Set Methods on DBModels
  */
 
 import _ from 'lodash'
 import bcrypt from 'bcrypt'
 import logger from '../../../config/winston'
-import moment from 'moment'
 import { OAuthAccessToken, OAuthAuthorizationCode, OAuthClient, OAuthRefreshToken, User, } from '../../models/oauth'
-
+import OAuthConfig from '../../../config/oauth'
+import { assign, } from 'lodash'
 
 /**
  * Invoked to generate a new access token.
@@ -71,7 +72,6 @@ function getAccessToken(bearerToken) {
   logger.log('debug', 'getAccessToken  %j', bearerToken)
   return OAuthAccessToken
     .findOne({ access_token: bearerToken, })
-    .where('expires').gt(moment())
     .populate('User')
     .populate('OAuthClient')
     .then((accessToken) => {
@@ -108,6 +108,7 @@ function getAccessToken(bearerToken) {
  * @param refreshToken - The access token to retrieve.
  * @returns {Object<refreshToken>}
  */
+// todo: Handle Errors, if refreshToken not exist generate error 503
 function getRefreshToken(refreshToken) {
   logger.log('debug', 'getRefreshToken %j', refreshToken)
   if (!refreshToken) return false
@@ -115,19 +116,15 @@ function getRefreshToken(refreshToken) {
     .findOne({
       refresh_token: refreshToken,
     })
-    .where('expires').gt(moment())
     .populate('User')
     .populate('OAuthClient')
-    .then((savedRT) => {
-      logger.log('silly', 'srt', savedRT)
+    .then((refreshToken) => {
       return {
-        user: savedRT ? savedRT.User : {},
-        client: savedRT ? savedRT.OAuthClient : {},
-        refreshTokenExpiresAt: savedRT ? moment(savedRT.expires) : null,
-        refresh_token_expires_at: savedRT ? moment(savedRT.expires) : null,
-        refreshToken: refreshToken,
-        refresh_token: refreshToken,
-        scope: savedRT.scope,
+        user: refreshToken.User,
+        client: refreshToken.OAuthClient,
+        refreshTokenExpiresAt: refreshToken.expires,
+        refreshToken: refreshToken.refresh_token,
+        scope: refreshToken.scope,
       }
     })
     .catch((err) => {
@@ -151,8 +148,6 @@ function getAuthorizationCode(code) {
   logger.log('debug', 'getAuthorizationCode %j', code)
   return OAuthAuthorizationCode
     .findOne({ authorization_code: code, })
-    // todo: review condition
-    .where('expires').gt(moment())
     .populate('User')
     .populate('OAuthClient')
     .then((authCodeModel) => {
@@ -168,8 +163,9 @@ function getAuthorizationCode(code) {
         scope: authCodeModel.scope,
       }
     })
-    .catch(function (err) {
+    .catch((err) => {
       console.warn('getAuthorizationCode - Err: ', err)
+      return err
     })
 }
 
@@ -194,20 +190,22 @@ function getClient(clientId, clientSecret) {
     .findOne(options)
     .then((client) => {
       if (!client) return new Error('client not found')
+
       const clientWithGrants = client
-      // todo: set grants from config file
-      clientWithGrants.grants = [
-        'authorization_code',
-        'password',
-        'refresh_token',
-        'client_credentials',
+
+      // Set Grants
+      clientWithGrants.grants = OAuthConfig.grants
+
+      // Redirect Uris
+      // todo: if you create another table for redirect URIs, you need modify this line:
+      clientWithGrants.redirectUris = [
+        clientWithGrants.redirect_uri,
       ]
-      // todo: if you need create another table for redirect URIs, create here.
-      clientWithGrants.redirectUris = [clientWithGrants.redirect_uri]  //eslint-disable-line comma-dangle
       delete clientWithGrants.redirect_uri
-      // todo: set vars from config
-      //clientWithGrants.refreshTokenLifetime = integer optional
-      //clientWithGrants.accessTokenLifetime  = integer optional
+
+      clientWithGrants.refreshTokenLifetime = OAuthConfig.options.token.refreshTokenLifetime
+      clientWithGrants.accessTokenLifetime = OAuthConfig.options.token.accessTokenLifetime
+
       return clientWithGrants
     })
     .catch((err) => {
@@ -381,39 +379,17 @@ function saveAuthorizationCode(code, client, user) {
 function revokeToken(token) {
   logger.log('debug', 'revokeToken %j', token)
   return OAuthRefreshToken
-    .findOneAndRemove({
-      where: {
-        refresh_token: token.refreshToken,
-      },
-    })
+    .findOne()
+    .where('refresh_token').equals(token.refreshToken)
+    .remove()
     .then((token) => {
+      logger.log('debug', 'revokeToken::Then::%j', token)
       return !!token
     })
     .catch((err) => {
       logger.error('revokeToken - Err: ', err)
       return false
     })
-
-  // return OAuthRefreshToken.findOne({
-  //   where: {
-  //     refresh_token: token.refreshToken,
-  //   },
-  // })
-  //   .then((rT) => {
-  //     if (rT) rT.destroy()
-  //     /***
-  //      * As per the discussion we need set older date
-  //      * revokeToken will expected return a boolean in future version
-  //      * https://github.com/oauthjs/node-oauth2-server/pull/274
-  //      * https://github.com/oauthjs/node-oauth2-server/issues/290
-  //      */
-  //     const expiredToken = token
-  //     expiredToken.refreshTokenExpiresAt = moment('2015-05-28T06:59:53.000Z')
-  //     return expiredToken
-  //   })
-  //   .catch((err) => {
-  //     logger.error('revokeToken - Err: ', err)
-  //   })
 }
 
 
@@ -429,38 +405,22 @@ function revokeToken(token) {
  */
 function revokeAuthorizationCode(code) {
   logger.log('debug', 'revokeAuthorizationCode %j', code)
+  // .findOneAndRemove({
+  //   where: {
+  //     authorization_code: code.code,
+  //   },
+  // })
   return OAuthAuthorizationCode
-    .findOneAndRemove({
-      where: {
-        authorization_code: code.code,
-      },
-    })
+    .findOne()
+    .where('authorization_code').equals(code.code)
+    .remove()
     .then((code) => {
       return !!code
     })
     .catch((err) => {
-      logger.error('getUser - Err: ', err)
+      logger.error('revokeAuthorizationCode - Err: ', err)
       return false
     })
-
-  // return OAuthAuthorizationCode.findOne({
-  //   where: {
-  //     authorization_code: code.code,
-  //   },
-  // }).then((rCode) => {
-  //   //if(rCode) rCode.destroy()
-  //   /***
-  //    * As per the discussion we need set older date
-  //    * revokeToken will expected return a boolean in future version
-  //    * https://github.com/oauthjs/node-oauth2-server/pull/274
-  //    * https://github.com/oauthjs/node-oauth2-server/issues/290
-  //    */
-  //   const expiredCode = code
-  //   expiredCode.expiresAt = new Date('2015-05-28T06:59:53.000Z')
-  //   return expiredCode
-  // }).catch((err) => {
-  //   logger.error('getUser - Err: ', err)
-  // })
 }
 
 
@@ -502,7 +462,7 @@ export default {
   // generateAuthorizationCode, // optional
   getAccessToken,
   getRefreshToken,
-  getAuthorizationCode, //getOAuthAuthorizationCode renamed to,
+  getAuthorizationCode,
   getClient,
   getUser,
   getUserFromClient,
