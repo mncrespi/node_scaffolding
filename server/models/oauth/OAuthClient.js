@@ -8,15 +8,22 @@ mongoose.Promise = Promise
 
 const OAuthClientSchema = new Schema({
   name: String,
-  client_id: String,
-  client_secret: String, // todo: encode
-  redirect_uri: String,
-  grant_types: String,
+  clientId: String,
+  clientSecret: String, // todo: encode
+  redirectUris: [
+    String,
+  ],
+  // grant_types: String,
+  grants: [
+    String,
+  ],
   scope: String,
   User: {
     type: Schema.Types.ObjectId,
     ref: 'User',
   },
+  refreshTokenLifetime: String, // Optional, todo: default from config
+  accessTokenLifetime: String, // Optional, todo: default from config
 })
 
 
@@ -65,16 +72,16 @@ OAuthClientSchema.statics = {
   },
 
   /**
-   * getOAuthClient by client_id and client_secret
-   * @param client_id client_secret - The objectId of user.
-   * @param client_secret - The objectId of user.
+   * getOAuthClient by clientId and clientSecret
+   * @param clientId client_secret - The objectId of user.
+   * @param clientSecret - The objectId of user.
    * @returns {Promise<OAuthClient, APIError>}
    */
-  getOAuthClient({ client_id, client_secret, } = {}) {
+  getOAuthClient({ clientId, clientSecret, } = {}) {
     return this.findOne()
       .select('-client_secret')
-      .where('client_id').equals(client_id)
-      .where('client_secret').equals(client_secret)
+      .where('clientId').equals(clientId)
+      .where('clientSecret').equals(clientSecret)
       .execAsync()
       .then((client) => {
         if (client)
@@ -86,13 +93,13 @@ OAuthClientSchema.statics = {
   },
 
   /**
-   * Get User by client_id
+   * Get User by clientId
    * @param clientId - ObjectId
    * @returns {Promise<User, APIError>}
    */
   getUserFromClient(clientId) {
     return this.findOne()
-      .where('client_id').equals(clientId)
+      .where('clientId').equals(clientId)
       .populate('User')
       .execAsync()
       .then((client) => {

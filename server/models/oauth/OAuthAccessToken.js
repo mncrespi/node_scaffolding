@@ -5,10 +5,9 @@ const Schema = mongoose.Schema
 // Set mongoose.Promise, http://mongoosejs.com/docs/promises.html
 mongoose.Promise = Promise
 
-
 const OAuthAccessTokenSchema = new Schema({
-  access_token: String,
-  expires_at: Date,
+  accessToken: String,
+  accessTokenExpiresAt: Date,
   scope: String,
   User: {
     type: Schema.Types.ObjectId,
@@ -27,7 +26,7 @@ const OAuthAccessTokenSchema = new Schema({
 OAuthAccessTokenSchema.statics = {
   getAccessToken(token) {
     return this.findOne()
-      .where('access_token').equals(token)
+      .where('accessToken').equals(token)
       .populate('User')
       .populate('OAuthClient')
       .exec()
@@ -42,8 +41,8 @@ OAuthAccessTokenSchema.statics = {
 
   saveAccessToken(token) {
     return this.create({
-      access_token: token.accessToken,
-      expires_at: token.expires_at,
+      accessToken: token.accessToken,
+      accessTokenExpiresAt: token.accessTokenExpiresAt,
       OAuthClient: token.clientId,
       User: token.userId,
       scope: token.scope,

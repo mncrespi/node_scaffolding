@@ -7,8 +7,8 @@ const Schema = mongoose.Schema
 mongoose.Promise = Promise
 
 const OAuthRefreshTokenSchema = new Schema({
-  refresh_token: String,
-  expires_at: Date,
+  refreshToken: String,
+  refreshTokenExpiresAt: Date,
   scope: String,
   User: {
     type: Schema.Types.ObjectId,
@@ -38,7 +38,7 @@ OAuthRefreshTokenSchema.statics = {
    */
   getRefreshToken(refreshToken) {
     return this.findOne()
-      .where('refresh_token').equals(refreshToken)
+      .where('refreshToken').equals(refreshToken)
       .populate('User')
       .populate('OAuthClient')
       .exec()
@@ -47,8 +47,8 @@ OAuthRefreshTokenSchema.statics = {
           return {
             user: refreshToken.User,
             client: refreshToken.OAuthClient,
-            refreshTokenExpiresAt: refreshToken.expires_at,
-            refreshToken: refreshToken.refresh_token,
+            refreshTokenExpiresAt: refreshToken.refreshTokenExpiresAt,
+            refreshToken: refreshToken.refreshToken,
             scope: refreshToken.scope,
           }
         else
@@ -60,8 +60,8 @@ OAuthRefreshTokenSchema.statics = {
   saveRefreshToken(token) {
     logger.log('debug', 'model::setRefreshToken::token::%j', token)
     return this.create({
-      refresh_token: token.refreshToken,
-      expires_at: token.expires_at,
+      refreshToken: token.refreshToken,
+      refreshTokenExpiresAt: token.refreshTokenExpiresAt,
       OAuthClient: token.clientId,
       User: token.userId,
       scope: token.scope,
@@ -82,7 +82,7 @@ OAuthRefreshTokenSchema.statics = {
    */
   revokeToken(refreshToken) {
     return this.findOne()
-      .where('refresh_token').equals(refreshToken)
+      .where('refreshToken').equals(refreshToken)
       .remove()
       .then((token) => {
         logger.log('debug', 'revokeToken::Then::%j', token)

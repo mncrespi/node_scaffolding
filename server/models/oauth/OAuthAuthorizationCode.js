@@ -6,9 +6,9 @@ const Schema = mongoose.Schema
 mongoose.Promise = Promise
 
 const OAuthAuthorizationCodeSchema = new Schema({
-  authorization_code: String,
-  expires_at: Date,
-  redirect_uri: String,
+  authorizationCode: String,
+  expiresAt: Date,
+  redirectUri: String,
   scope: String,
   User: {
     type: Schema.Types.ObjectId,
@@ -27,7 +27,7 @@ const OAuthAuthorizationCodeSchema = new Schema({
 OAuthAuthorizationCodeSchema.statics = {
   getAuthorizationCode(code) {
     return this.findOne()
-      .where('authorization_code').equals(code)
+      .where('authorizationCode').equals(code)
       .populate('User')
       .populate('OAuthClient')
       .then((authCode) => {
@@ -56,7 +56,7 @@ OAuthAuthorizationCodeSchema.statics = {
 
   removeAuthorizationCode(code) {
     return this.findOne()
-      .where('authorization_code').equals(code)
+      .where('authorizationCode').equals(code)
       .remove()
       .then((authCode) => {
         if (authCode)

@@ -72,12 +72,11 @@ function getAccessToken(bearerToken) {
     .then((accessToken) => {
       const token = {}
 
-      token.access_token = accessToken.access_token
+      token.accessToken = accessToken.accessToken
       token.user = accessToken.User
       token.client = accessToken.OAuthClient
       token.scope = accessToken.scope
-      token.expires_at = accessToken.expires_at
-      token.accessTokenExpiresAt = accessToken.expires_at
+      token.accessTokenExpiresAt = accessToken.accessTokenExpiresAt
 
       logger.log('debug', 'getAccessToken::token')
       logger.log('debug', 'getAccessToken::token::%j', token)
@@ -137,8 +136,8 @@ function getAuthorizationCode(code) {
       return {
         code: code,
         client: client,
-        expiresAt: authCode.expires_at,
-        redirectUri: client.redirect_uri,
+        expiresAt: authCode.expiresAt,
+        redirectUri: authCode.redirectUri,
         user: user,
         scope: authCode.scope,
       }
@@ -163,30 +162,43 @@ function getAuthorizationCode(code) {
  */
 function getClient(clientId, clientSecret) {
   logger.log('debug', 'getClient  clientId %j, clientSecret %j', clientId, clientSecret)
-  const options = {
-    client_id: (clientId),
-    client_secret: (clientSecret),
-  }
+  // const options = {
+  //   client_id: (clientId),
+  //   client_secret: (clientSecret),
+  // }
 
   return OAuthClient
-    .getOAuthClient(options)
-    .then((client) => {
-      const clientWithGrants = client
+    .getOAuthClient({ clientId, clientSecret, })
+    .then((v) => {
+      const client = v
 
       // Set Grants
-      clientWithGrants.grants = OAuthConfig.grants
+      // clientWithGrants.grants = OAuthConfig.grants
 
       // Redirect Uris
       // If you create another table for redirect URIs, you need modify this line:
+      /*
       clientWithGrants.redirectUris = [
         clientWithGrants.redirect_uri,
+        clientWithGrants.redirectUri,
       ]
-      delete clientWithGrants.redirect_uri
 
-      clientWithGrants.refreshTokenLifetime = OAuthConfig.options.token.refreshTokenLifetime
-      clientWithGrants.accessTokenLifetime = OAuthConfig.options.token.accessTokenLifetime
+      // delete clientWithGrants.redirect_uri
+      // delete clientWithGrants.redirectUri
+      */
 
-      return clientWithGrants
+      // Set default Grants
+      client.grants = (client.grants) ? client.grants : OAuthConfig.grants
+
+      // Set default accessTokenLifetime
+      client.accessTokenLifetime = (client.accessTokenLifetime) ?
+        client.accessTokenLifetime : OAuthConfig.options.token.accessTokenLifetime
+
+      // Set default refreshTokenLifetime
+      client.refreshTokenLifetime = (client.refreshTokenLifetime) ?
+        client.refreshTokenLifetime : OAuthConfig.options.token.refreshTokenLifetime
+
+      return client
     })
     .catch((err) => {
       logger.log('debug', 'getClient - Err: ', err)
@@ -230,7 +242,7 @@ function getUser(username, password) {
  */
 function getUserFromClient(client) {
   logger.log('debug', 'getUserFromClient %j', client)
-  const clientId = client.client_id
+  const { clientId, } = client
 
   return OAuthClient
     .getUserFromClient(clientId)
@@ -265,7 +277,7 @@ function saveToken(token, client, user) {
   l.push(OAuthAccessToken
     .saveAccessToken({
       accessToken: token.accessToken,
-      expires_at: token.accessTokenExpiresAt,
+      accessTokenExpiresAt: token.accessTokenExpiresAt,
       clientId: client._id,
       userId: user._id,
       scope: token.scope,
@@ -274,12 +286,12 @@ function saveToken(token, client, user) {
   // Create AccessToken for password grant
   if (token.refreshToken)
     l.push(OAuthRefreshToken.saveRefreshToken({
-        refreshToken: token.refreshToken,
-        expires_at: token.refreshTokenExpiresAt,
-        clientId: client._id,
-        userId: user._id,
-        scope: token.scope,
-      }))
+      refreshToken: token.refreshToken,
+      refreshTokenExpiresAt: token.refreshTokenExpiresAt,
+      clientId: client._id,
+      userId: user._id,
+      scope: token.scope,
+    }))
 
   return Promise
     .all(l)
@@ -288,8 +300,8 @@ function saveToken(token, client, user) {
         {
           client: client,
           user: user,
-          access_token: token.accessToken, // proxy
-          refresh_token: token.refreshToken, // proxy
+          accessToken: token.accessToken, // proxy
+          refreshToken: token.refreshToken, // proxy
         },
         token
       )
@@ -317,9 +329,10 @@ function saveAuthorizationCode(code, client, user) {
   logger.log('debug', 'saveAuthorizationCode\n\ncode %j\n\nclient %j\n\nuser %j', code, client, user)
   return OAuthAuthorizationCode
     .saveAuthorizationCode({
-      expires_at: code.expiresAt,
+      expiresAt: code.expiresAt,
       OAuthClient: client._id,
-      authorization_code: code.authorizationCode,
+      redirectUri: client.redirectUris[0], // todo: get redirectUri
+      authorizationCode: code.authorizationCode,
       User: user._id,
       scope: code.scope,
     })
