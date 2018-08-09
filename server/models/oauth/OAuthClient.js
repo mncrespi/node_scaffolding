@@ -9,7 +9,7 @@ mongoose.Promise = Promise
 const OAuthClientSchema = new Schema({
   name: String,
   client_id: String,
-  client_secret: String,
+  client_secret: String, // todo: encode
   redirect_uri: String,
   grant_types: String,
   scope: String,
@@ -17,17 +17,14 @@ const OAuthClientSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'User',
   },
-  deleted_at: {
-    type: Date,
-    default: null,
-  },
 })
+
 
 /**
  * Methods
  */
-OAuthClientSchema.method({
-})
+OAuthClientSchema.method({})
+
 
 /**
  * Statics
@@ -36,18 +33,18 @@ OAuthClientSchema.statics = {
   /**
    * Get user by Id
    * @param id - The objectId of user.
-   * @returns {Promise<User, APIError>}
+   * @returns {Promise<OAuthClient, APIError>}
    */
   get(id) {
     //console.log(id) // eslint-disable-line no-console
     return this.findById(id)
-      .select('-__v -deleted_at')
-      .execAsync().then((client) => {
-        if (client) {
+      .select('-client_secret')
+      .execAsync()
+      .then((client) => {
+        if (client)
           return client
-        }
-        // const err = new APIError('No such user exists!', httpStatus.NOT_FOUND)
-        return Promise.reject('No such client exists!')
+        else
+          return Promise.reject('No such client exists!')
       })
   },
 
@@ -55,17 +52,56 @@ OAuthClientSchema.statics = {
    * List users in descending order of 'createdAt' timestamp.
    * @param {number} skip - Number of users to be skipped.
    * @param {number} limit - Limit number of users to be returned.
-   * @returns {Promise<User[]>}
+   * @returns {Promise<OAuthClient[]>}
    */
   list({ skip = 0, limit = 50, } = {}) {
     return this.find()
       .populate('User')
-      .select('-password -__v -deleted_at')
-      .where('deleted_at').equals(null)
+      .select('-client_secret')
       .sort({ created_at: 1, })
       .skip(skip)
       .limit(limit)
       .execAsync()
+  },
+
+  /**
+   * getOAuthClient by client_id and client_secret
+   * @param client_id client_secret - The objectId of user.
+   * @param client_secret - The objectId of user.
+   * @returns {Promise<OAuthClient, APIError>}
+   */
+  getOAuthClient({ client_id, client_secret, } = {}) {
+    return this.findOne()
+      .select('-client_secret')
+      .where('client_id').equals(client_id)
+      .where('client_secret').equals(client_secret)
+      .execAsync()
+      .then((client) => {
+        if (client)
+          return client
+        else
+          return Promise.reject('No such client exists!')
+      })
+      .catch((e) => Promise.reject(e))
+  },
+
+  /**
+   * Get User by client_id
+   * @param clientId - ObjectId
+   * @returns {Promise<User, APIError>}
+   */
+  getUserFromClient(clientId) {
+    return this.findOne()
+      .where('client_id').equals(clientId)
+      .populate('User')
+      .execAsync()
+      .then((client) => {
+        if (client && client.User)
+          return client.User
+        else
+          return Promise.reject('No such User exists!')
+      })
+      .catch((e) => Promise.reject(e))
   },
 
 }

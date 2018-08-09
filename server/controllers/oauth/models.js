@@ -4,8 +4,6 @@
  * todo: Set Methods on DBModels
  */
 
-import _ from 'lodash'
-import bcrypt from 'bcrypt'
 import logger from '../../../config/winston'
 import { OAuthAccessToken, OAuthAuthorizationCode, OAuthClient, OAuthRefreshToken, User, } from '../../models/oauth'
 import OAuthConfig from '../../../config/oauth'
@@ -70,19 +68,16 @@ import { assign, } from 'lodash'
 function getAccessToken(bearerToken) {
   logger.log('debug', 'getAccessToken  %j', bearerToken)
   return OAuthAccessToken
-    .findOne({ access_token: bearerToken, })
-    .populate('User')
-    .populate('OAuthClient')
+    .getAccessToken(bearerToken)
     .then((accessToken) => {
-      if (!accessToken) return false
       const token = {}
 
       token.access_token = accessToken.access_token
       token.user = accessToken.User
       token.client = accessToken.OAuthClient
       token.scope = accessToken.scope
-      token.expires = accessToken.expires
-      token.accessTokenExpiresAt = accessToken.expires
+      token.expires_at = accessToken.expires_at
+      token.accessTokenExpiresAt = accessToken.expires_at
 
       logger.log('debug', 'getAccessToken::token')
       logger.log('debug', 'getAccessToken::token::%j', token)
@@ -91,7 +86,7 @@ function getAccessToken(bearerToken) {
       return token
     })
     .catch((err) => {
-      logger.error('getAccessToken - Err: ', err)
+      logger.log('debug', 'getAccessToken - Err: ', err)
       return err
     })
 }
@@ -107,27 +102,16 @@ function getAccessToken(bearerToken) {
  * @param refreshToken - The access token to retrieve.
  * @returns {Object<refreshToken>}
  */
-// todo: Handle Errors, if refreshToken not exist generate error 503
 function getRefreshToken(refreshToken) {
   logger.log('debug', 'getRefreshToken %j', refreshToken)
-  if (!refreshToken) return false
   return OAuthRefreshToken
-    .findOne({
-      refresh_token: refreshToken,
-    })
-    .populate('User')
-    .populate('OAuthClient')
-    .then((refreshToken) => {
-      return {
-        user: refreshToken.User,
-        client: refreshToken.OAuthClient,
-        refreshTokenExpiresAt: refreshToken.expires,
-        refreshToken: refreshToken.refresh_token,
-        scope: refreshToken.scope,
-      }
+    .getRefreshToken(refreshToken)
+    .then((token) => {
+      logger.log('debug', '\n\ngetRefreshToken::%j\n\n', token)
+      return token
     })
     .catch((err) => {
-      logger.error('getRefreshToken - Err: ', err)
+      logger.log('debug', 'getRefreshToken - Err: ', err)
       return err
     })
 }
@@ -146,24 +130,21 @@ function getRefreshToken(refreshToken) {
 function getAuthorizationCode(code) {
   logger.log('debug', 'getAuthorizationCode %j', code)
   return OAuthAuthorizationCode
-    .findOne({ authorization_code: code, })
-    .populate('User')
-    .populate('OAuthClient')
-    .then((authCodeModel) => {
-      if (!authCodeModel) return false
-      const client = authCodeModel.OAuthClient
-      const user = authCodeModel.User
+    .getAuthorizationCode(code)
+    .then((authCode) => {
+      const client = authCode.OAuthClient
+      const user = authCode.User
       return {
         code: code,
         client: client,
-        expiresAt: authCodeModel.expires,
+        expiresAt: authCode.expires_at,
         redirectUri: client.redirect_uri,
         user: user,
-        scope: authCodeModel.scope,
+        scope: authCode.scope,
       }
     })
     .catch((err) => {
-      console.warn('getAuthorizationCode - Err: ', err)
+      logger.log('debug', 'getAuthorizationCode - Err: ', err)
       return err
     })
 }
@@ -182,21 +163,21 @@ function getAuthorizationCode(code) {
  */
 function getClient(clientId, clientSecret) {
   logger.log('debug', 'getClient  clientId %j, clientSecret %j', clientId, clientSecret)
-  const options = { client_id: clientId, }
-  if (clientSecret) options.client_secret = clientSecret
+  const options = {
+    client_id: (clientId),
+    client_secret: (clientSecret),
+  }
 
   return OAuthClient
-    .findOne(options)
+    .getOAuthClient(options)
     .then((client) => {
-      if (!client) return new Error('client not found')
-
       const clientWithGrants = client
 
       // Set Grants
       clientWithGrants.grants = OAuthConfig.grants
 
       // Redirect Uris
-      // todo: if you create another table for redirect URIs, you need modify this line:
+      // If you create another table for redirect URIs, you need modify this line:
       clientWithGrants.redirectUris = [
         clientWithGrants.redirect_uri,
       ]
@@ -208,7 +189,7 @@ function getClient(clientId, clientSecret) {
       return clientWithGrants
     })
     .catch((err) => {
-      logger.error('getClient - Err: ', err)
+      logger.log('debug', 'getClient - Err: ', err)
       return err
     })
 }
@@ -227,16 +208,10 @@ function getClient(clientId, clientSecret) {
  */
 function getUser(username, password) {
   return User
-    .findOne({ username: username, })
-    .then((user) => {
-      if (bcrypt.compareSync(password, user.password)) {
-        return user
-      } else {
-        return false
-      }
-    })
+    .getUser(username, password)
+    .then((user) => user)
     .catch((err) => {
-      logger.error('getUser - Err: ', err)
+      logger.log('debug', 'getUser - Err: ', err)
       return err
     })
 }
@@ -255,20 +230,16 @@ function getUser(username, password) {
  */
 function getUserFromClient(client) {
   logger.log('debug', 'getUserFromClient %j', client)
-  const options = { client_id: client.client_id, }
-  if (client.client_secret) options.client_secret = client.client_secret
+  const clientId = client.client_id
 
   return OAuthClient
-    .findOne(options)
-    .populate('User')
-    .then((client) => {
-      logger.log('debug', 'Client::%j', client)
-      if (!client) return false
-      if (!client.User) return false
-      return client.User
+    .getUserFromClient(clientId)
+    .then((user) => {
+      logger.log('debug', 'getUserFromClient::User::%j', user)
+      return user
     })
     .catch((err) => {
-      logger.error('getUserFromClient - Err: ', err)
+      logger.log('debug', 'getUserFromClient - Err: ', err)
       return err
     })
 }
@@ -288,34 +259,32 @@ function getUserFromClient(client) {
  */
 function saveToken(token, client, user) {
   logger.log('debug', 'saveToken:: \n\nToken: %j \n\nClient: %j \n\nUser: %j\n\n', token, client, user)
-  return Promise
-    .all([
-      OAuthAccessToken
-        .create({
-          access_token: token.accessToken,
-          expires: token.accessTokenExpiresAt,
-          OAuthClient: client._id,
-          User: user._id,
-          scope: token.scope,
-        }),
-      token.refreshToken ? OAuthRefreshToken.create({ // no refresh token for client_credentials
-        refresh_token: token.refreshToken,
-        expires: token.refreshTokenExpiresAt,
-        OAuthClient: client._id,
-        User: user._id,
-        scope: token.scope,
-      }) : [],
-      // token.refreshTokenExpiresAt ? token.refresh_token_expires_at = token.refreshTokenExpiresAt : '',
-    ])
-    .then((resultsArray) => {
-      // todo: review validation
-      if (client.User.toString() !== user._id.toString()) {
-        logger.error('saveToken :: Invalid User-Client :: clientId %j', client.User)
-        logger.error('saveToken :: Invalid User-Client :: userId %j', user._id)
-        throw 'saveToken :: Invalid User-Client'
-      }
+  const l = []
 
-      return _.assign(  // expected to return client and user, but not returning
+  // Create AccessToken
+  l.push(OAuthAccessToken
+    .saveAccessToken({
+      accessToken: token.accessToken,
+      expires_at: token.accessTokenExpiresAt,
+      clientId: client._id,
+      userId: user._id,
+      scope: token.scope,
+    }))
+
+  // Create AccessToken for password grant
+  if (token.refreshToken)
+    l.push(OAuthRefreshToken.saveRefreshToken({
+        refreshToken: token.refreshToken,
+        expires_at: token.refreshTokenExpiresAt,
+        clientId: client._id,
+        userId: user._id,
+        scope: token.scope,
+      }))
+
+  return Promise
+    .all(l)
+    .then((resultsArray) => {
+      return assign(  // expected to return client and user, but not returning
         {
           client: client,
           user: user,
@@ -326,7 +295,7 @@ function saveToken(token, client, user) {
       )
     })
     .catch((err) => {
-      logger.error('revokeToken - Err: ', err)
+      logger.log('debug', 'revokeToken - Err: ', err)
       return err
     })
 }
@@ -347,8 +316,8 @@ function saveToken(token, client, user) {
 function saveAuthorizationCode(code, client, user) {
   logger.log('debug', 'saveAuthorizationCode\n\ncode %j\n\nclient %j\n\nuser %j', code, client, user)
   return OAuthAuthorizationCode
-    .create({
-      expires: code.expiresAt,
+    .saveAuthorizationCode({
+      expires_at: code.expiresAt,
       OAuthClient: client._id,
       authorization_code: code.authorizationCode,
       User: user._id,
@@ -359,7 +328,7 @@ function saveAuthorizationCode(code, client, user) {
       return code
     })
     .catch((err) => {
-      logger.error('saveAuthorizationCode - Err: ', err)
+      logger.log('debug', 'saveAuthorizationCode - Err: ', err)
       return err
     })
 }
@@ -378,15 +347,13 @@ function saveAuthorizationCode(code, client, user) {
 function revokeToken(token) {
   logger.log('debug', 'revokeToken %j', token)
   return OAuthRefreshToken
-    .findOne()
-    .where('refresh_token').equals(token.refreshToken)
-    .remove()
+    .revokeToken(token.refreshToken)
     .then((token) => {
       logger.log('debug', 'revokeToken::Then::%j', token)
-      return !!token
+      return token
     })
     .catch((err) => {
-      logger.error('revokeToken - Err: ', err)
+      logger.log('debug', 'revokeToken - Err: ', err)
       return false
     })
 }
@@ -404,20 +371,11 @@ function revokeToken(token) {
  */
 function revokeAuthorizationCode(code) {
   logger.log('debug', 'revokeAuthorizationCode %j', code)
-  // .findOneAndRemove({
-  //   where: {
-  //     authorization_code: code.code,
-  //   },
-  // })
   return OAuthAuthorizationCode
-    .findOne()
-    .where('authorization_code').equals(code.code)
-    .remove()
-    .then((code) => {
-      return !!code
-    })
+    .removeAuthorizationCode()
+    .then((code) => code)
     .catch((err) => {
-      logger.error('revokeAuthorizationCode - Err: ', err)
+      logger.log('debug', 'revokeAuthorizationCode - Err: ', err)
       return false
     })
 }
@@ -437,7 +395,7 @@ function revokeAuthorizationCode(code) {
  * @returns {boolean}
  */
 function validateScope(user, client, scope) {
-  return user.scope === scope
+  return (user.scope === scope && client.scope === scope && scope !== null) ? scope : false
 }
 
 

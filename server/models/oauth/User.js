@@ -3,7 +3,6 @@ import mongoose from 'mongoose'
 import bcrypt from 'bcrypt'
 import logger from './../../../config/winston'
 import moment from 'moment'
-import APIError from '../../helpers/APIError'
 
 
 const Schema = mongoose.Schema
@@ -46,23 +45,11 @@ const UserSchema = new Schema({
     type: String,
     required: false,
   },
-  // role: {
-  //   type: String,
-  //   required: true,
-  //   enum: [
-  //     'su',
-  //     'api',
-  //   ],
-  // },
   created_at: {
     type: Date,
     default: moment(),
   },
   updated_at: {
-    type: Date,
-    default: null,
-  },
-  deleted_at: {
     type: Date,
     default: null,
   },
@@ -103,8 +90,7 @@ UserSchema.pre('save', function (next) {
 /**
  * Methods
  */
-UserSchema.method({
-})
+UserSchema.method({})
 
 /**
  * Statics
@@ -117,14 +103,15 @@ UserSchema.statics = {
    */
   get(id) {
     return this.findById(id)
-      .select('-password -__v -deleted_at')
-      .execAsync().then((user) => {
-        if (user) {
+      .select('-password')
+      .execAsync()
+      .then((user) => {
+        if (user)
           return user
-        }
-        // const err = new APIError('No such user exists!', httpStatus.NOT_FOUND)
-        return Promise.reject('No such user exists!')
+        else
+          return Promise.reject('No such user exists!')
       })
+      .catch((err) => Promise.reject(err))
   },
 
   /**
@@ -135,7 +122,7 @@ UserSchema.statics = {
    */
   list({ skip = 0, limit = 50, } = {}) {
     return this.find()
-      .select('-password -__v -deleted_at')
+      .select('-password')
       .where('deleted_at').equals(null)
       .sort({ created_at: 1, })
       .skip(skip)
@@ -143,35 +130,25 @@ UserSchema.statics = {
       .execAsync()
   },
 
-  validateUserCredentials(email, pass) {
+  /**
+   * Get User by username, password
+   * @param username
+   * @param password
+   * @returns {Promise<User>}
+   */
+  getUser(username, password) {
     return this.findOne()
-      .where('email').equals(email)
-      .execAsync()
+      .where('username').equals(username)
       .then((user) => {
-        if (user) {
-          logger.log('silly', 'FindOne User:', user.name)
-          //Compare Password
-          if (bcrypt.compareSync(pass, user.password)) {
-            logger.log('silly', 'validateUserCredentials::bcryptCompareOK')
-            return {
-              _id: user._id,
-              name: user.name,
-              surname: user.surname,
-              email: user.email,
-              username: user.username,
-              role: user.role,
-              created_at: user.created_at,
-              updated_at: user.updated_at,
-            }
-          } else {
-            logger.log('error', 'validateUserCredentials::bcryptCompareKO')
-            return false
-          }
+        if (bcrypt.compareSync(password, user.password)) {
+          const data = user
+          delete data.password
+          return data
         } else {
-          logger.error('validateUserCredentials :: User Not Found')
-          return false
+          return Promise.reject('No such user exists!')
         }
       })
+      .catch((err) => Promise.reject(err))
   },
 }
 
