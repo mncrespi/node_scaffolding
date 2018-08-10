@@ -1,5 +1,7 @@
 import Promise from 'bluebird'
 import mongoose from 'mongoose'
+import bcrypt from 'bcrypt'
+
 
 const Schema = mongoose.Schema
 
@@ -9,11 +11,10 @@ mongoose.Promise = Promise
 const OAuthClientSchema = new Schema({
   name: String,
   clientId: String,
-  clientSecret: String, // todo: encode
+  clientSecret: String,
   redirectUris: [
     String,
   ],
-  // grant_types: String,
   grants: [
     String,
   ],
@@ -24,6 +25,28 @@ const OAuthClientSchema = new Schema({
   },
   refreshTokenLifetime: String, // Optional, todo: default from config
   accessTokenLifetime: String, // Optional, todo: default from config
+})
+
+
+/**
+ * Add your
+ * - pre-save hooks
+ * - validations
+ * - virtuals
+ */
+OAuthClientSchema.pre('save', function (next) {
+  const client = this
+  if (this.isModified('clientSecret') || this.isNew)
+    bcrypt.genSalt(10, (err, salt) => {
+      if (err) return next(err)
+      bcrypt.hash(client.clientSecret, salt, (err, hash) => {
+        if (err) return next(err)
+        client.clientSecret = hash
+        next()
+      })
+    })
+  else
+    return next()
 })
 
 
@@ -43,9 +66,8 @@ OAuthClientSchema.statics = {
    * @returns {Promise<OAuthClient, APIError>}
    */
   get(id) {
-    //console.log(id) // eslint-disable-line no-console
     return this.findById(id)
-      .select('-client_secret')
+      .select('-clientSecret')
       .execAsync()
       .then((client) => {
         if (client)
@@ -63,8 +85,8 @@ OAuthClientSchema.statics = {
    */
   list({ skip = 0, limit = 50, } = {}) {
     return this.find()
+      .select('-clientSecret')
       .populate('User')
-      .select('-client_secret')
       .sort({ created_at: 1, })
       .skip(skip)
       .limit(limit)
@@ -79,15 +101,16 @@ OAuthClientSchema.statics = {
    */
   getOAuthClient({ clientId, clientSecret, } = {}) {
     return this.findOne()
-      .select('-client_secret')
       .where('clientId').equals(clientId)
-      .where('clientSecret').equals(clientSecret)
       .execAsync()
       .then((client) => {
-        if (client)
-          return client
-        else
+        if (bcrypt.compareSync(clientSecret, client.clientSecret)) {
+          const data = client
+          delete data.clientSecret
+          return data
+        } else {
           return Promise.reject('No such client exists!')
+        }
       })
       .catch((e) => Promise.reject(e))
   },
@@ -99,6 +122,7 @@ OAuthClientSchema.statics = {
    */
   getUserFromClient(clientId) {
     return this.findOne()
+      .select('-clientSecret')
       .where('clientId').equals(clientId)
       .populate('User')
       .execAsync()

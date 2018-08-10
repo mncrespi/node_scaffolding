@@ -1,7 +1,5 @@
 /**
  * DOC: https://oauth2-server.readthedocs.io/en/latest/model/spec.html#model-specification
- * todo: Handle Errors
- * todo: Set Methods on DBModels
  */
 
 import logger from '../../../config/winston'
@@ -271,17 +269,17 @@ function getUserFromClient(client) {
  */
 function saveToken(token, client, user) {
   logger.log('debug', 'saveToken:: \n\nToken: %j \n\nClient: %j \n\nUser: %j\n\n', token, client, user)
-  const l = []
-
-  // Create AccessToken
-  l.push(OAuthAccessToken
-    .saveAccessToken({
-      accessToken: token.accessToken,
-      accessTokenExpiresAt: token.accessTokenExpiresAt,
-      clientId: client._id,
-      userId: user._id,
-      scope: token.scope,
-    }))
+  const l = [
+    // Create AccessToken
+    OAuthAccessToken
+      .saveAccessToken({
+        accessToken: token.accessToken,
+        accessTokenExpiresAt: token.accessTokenExpiresAt,
+        clientId: client._id,
+        userId: user._id,
+        scope: token.scope,
+      }),
+  ]
 
   // Create AccessToken for password grant
   if (token.refreshToken)

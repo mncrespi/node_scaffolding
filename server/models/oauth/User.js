@@ -64,26 +64,18 @@ const UserSchema = new Schema({
  */
 
 UserSchema.pre('save', function (next) {
-  logger.log('debug', 'el presave trae problemas')
   const user = this
-  if (this.isModified('password') || this.isNew) {
-    logger.log('debug', 'modificado password')
+  if (this.isModified('password') || this.isNew)
     bcrypt.genSalt(10, (err, salt) => {
-      if (err) {
-        return next(err)
-      }
+      if (err) return next(err)
       bcrypt.hash(user.password, salt, (err, hash) => {
-        if (err) {
-          return next(err)
-        }
+        if (err) return next(err)
         user.password = hash
         next()
       })
     })
-  } else {
-    logger.log('debug', 'no modificado password')
+  else
     return next()
-  }
 })
 
 
