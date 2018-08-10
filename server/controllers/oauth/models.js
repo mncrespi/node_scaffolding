@@ -159,31 +159,11 @@ function getAuthorizationCode(code) {
  * @returns {Object<Client>}
  */
 function getClient(clientId, clientSecret) {
-  logger.log('debug', 'getClient  clientId %j, clientSecret %j', clientId, clientSecret)
-  // const options = {
-  //   client_id: (clientId),
-  //   client_secret: (clientSecret),
-  // }
-
+  logger.log('debug', 'getClient::clientId %j, clientSecret %j', clientId, clientSecret)
   return OAuthClient
     .getOAuthClient({ clientId, clientSecret, })
     .then((v) => {
       const client = v
-
-      // Set Grants
-      // clientWithGrants.grants = OAuthConfig.grants
-
-      // Redirect Uris
-      // If you create another table for redirect URIs, you need modify this line:
-      /*
-      clientWithGrants.redirectUris = [
-        clientWithGrants.redirect_uri,
-        clientWithGrants.redirectUri,
-      ]
-
-      // delete clientWithGrants.redirect_uri
-      // delete clientWithGrants.redirectUri
-      */
 
       // Set default Grants
       client.grants = (client.grants) ? client.grants : OAuthConfig.grants
@@ -239,7 +219,7 @@ function getUser(username, password) {
  * @returns {Object<User>}
  */
 function getUserFromClient(client) {
-  logger.log('debug', 'getUserFromClient %j', client)
+  logger.log('debug', 'getUserFromClient:%j', client)
   const { clientId, } = client
 
   return OAuthClient
@@ -268,7 +248,7 @@ function getUserFromClient(client) {
  * @returns {Object<token>}
  */
 function saveToken(token, client, user) {
-  logger.log('debug', 'saveToken:: \n\nToken: %j \n\nClient: %j \n\nUser: %j\n\n', token, client, user)
+  logger.log('debug', 'saveToken::\nToken: %j\nClient: %j\nUser: %j', token, client, user)
   const l = [
     // Create AccessToken
     OAuthAccessToken
@@ -406,6 +386,8 @@ function revokeAuthorizationCode(code) {
  * @returns {boolean}
  */
 function validateScope(user, client, scope) {
+  // If you need other validation, modify this code:
+  // You can use OAuthScope schema
   return (user.scope === scope && client.scope === scope && scope !== null) ? scope : false
 }
 
