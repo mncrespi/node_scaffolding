@@ -324,12 +324,12 @@ function saveToken(token, client, user) {
  * @returns {Object<code>}
  */
 function saveAuthorizationCode(code, client, user) {
-  logger.log('debug', 'saveAuthorizationCode\n\ncode %j\n\nclient %j\n\nuser %j', code, client, user)
+  logger.log('debug', 'saveAuthorizationCode\ncode %j\nclient %j\nuser %j', code, client, user)
   return OAuthAuthorizationCode
     .saveAuthorizationCode({
       expiresAt: code.expiresAt,
       OAuthClient: client._id,
-      redirectUri: client.redirectUris[0], // todo: get redirectUri
+      redirectUri: client.redirectUris[0], // todo: get Authorization RedirectUri
       authorizationCode: code.authorizationCode,
       User: user._id,
       scope: code.scope,

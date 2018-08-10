@@ -7,16 +7,27 @@ const Schema = mongoose.Schema
 mongoose.Promise = Promise
 
 const OAuthRefreshTokenSchema = new Schema({
-  refreshToken: String,
-  refreshTokenExpiresAt: Date,
-  scope: String,
+  refreshToken: {
+    type: String,
+    required: true,
+  },
+  refreshTokenExpiresAt: {
+    type: Date,
+    required: true,
+  },
+  scope: {
+    type: String,
+    required: true,
+  },
   User: {
     type: Schema.Types.ObjectId,
     ref: 'User',
+    required: true,
   },
   OAuthClient: {
     type: Schema.Types.ObjectId,
     ref: 'OAuthClient',
+    required: true,
   },
 })
 

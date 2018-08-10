@@ -1,3 +1,4 @@
+// todo: Scopes by OAuthScope
 import OAuthAccessToken from './OAuthAccessToken'
 import OAuthAuthorizationCode from './OAuthAuthorizationCode'
 import OAuthClient from './OAuthClient'

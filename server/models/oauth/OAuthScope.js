@@ -6,8 +6,15 @@ const Schema = mongoose.Schema
 mongoose.Promise = Promise
 
 const OAuthScopeSchema = new Schema({
-  scope: String,
-  isDefault: Boolean,
+  scope: {
+    type: String,
+    lowercase: true,
+    required: true,
+  },
+  isDefault: {
+    type: Boolean,
+    default: false,
+  },
 })
 
 export default mongoose.model('OAuthScope', OAuthScopeSchema)

@@ -6,17 +6,31 @@ const Schema = mongoose.Schema
 mongoose.Promise = Promise
 
 const OAuthAuthorizationCodeSchema = new Schema({
-  authorizationCode: String,
-  expiresAt: Date,
-  redirectUri: String,
-  scope: String,
+  authorizationCode: {
+    type: String,
+    required: true,
+  },
+  expiresAt: {
+    type: Date,
+    required: true,
+  },
+  redirectUri: {
+    type: String,
+    required: true,
+  },
+  scope: {
+    type: String,
+    required: true,
+  },
   User: {
     type: Schema.Types.ObjectId,
     ref: 'User',
+    required: true,
   },
   OAuthClient: {
     type: Schema.Types.ObjectId,
     ref: 'OAuthClient',
+    required: true,
   },
 })
 

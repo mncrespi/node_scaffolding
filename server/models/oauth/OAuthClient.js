@@ -8,24 +8,47 @@ const Schema = mongoose.Schema
 // Set mongoose.Promise, http://mongoosejs.com/docs/promises.html
 mongoose.Promise = Promise
 
+/* eslint-disable */
 const OAuthClientSchema = new Schema({
-  name: String,
-  clientId: String,
-  clientSecret: String,
-  redirectUris: [
-    String,
-  ],
-  grants: [
-    String,
-  ],
-  scope: String,
+  name: {
+    type: String,
+    required: true,
+  },
+  clientId: {
+    type: String,
+    required: true,
+  },
+  clientSecret: {
+    type: String,
+    required: true,
+  },
+  redirectUris: {
+    type: [String],
+    required: true,
+  },
+  grants: {
+    type: [String],
+    required: true,
+  },
+  scope: {
+    type: String,
+    required: true,
+  },
   User: {
     type: Schema.Types.ObjectId,
     ref: 'User',
+    required: true,
   },
-  refreshTokenLifetime: String, // Optional, todo: default from config
-  accessTokenLifetime: String, // Optional, todo: default from config
+  refreshTokenLifetime: { // Optional, todo: default from config
+    type: String,
+    required: true,
+  },
+  accessTokenLifetime: { // Optional, todo: default from config
+    type: String,
+    required: true,
+  },
 })
+/* eslint-enable */
 
 
 /**

@@ -7,7 +7,7 @@ import logger from '../../../config/winston'
 
 
 // todo: URLs
-// todo: Error 503, Invalid Credentials
+// todo: Error 503, Invalid ClientCredentials
 
 export default function (app) {
   /**

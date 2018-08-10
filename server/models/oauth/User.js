@@ -1,7 +1,6 @@
 import Promise from 'bluebird'
 import mongoose from 'mongoose'
 import bcrypt from 'bcrypt'
-import logger from './../../../config/winston'
 import moment from 'moment'
 
 

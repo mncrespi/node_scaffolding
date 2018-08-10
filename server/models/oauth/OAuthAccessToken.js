@@ -6,16 +6,27 @@ const Schema = mongoose.Schema
 mongoose.Promise = Promise
 
 const OAuthAccessTokenSchema = new Schema({
-  accessToken: String,
-  accessTokenExpiresAt: Date,
-  scope: String,
+  accessToken: {
+    type: String,
+    required: true,
+  },
+  accessTokenExpiresAt: {
+    type: Date,
+    required: true,
+  },
+  scope: {
+    type: String,
+    required: true,
+  },
   User: {
     type: Schema.Types.ObjectId,
     ref: 'User',
+    required: true,
   },
   OAuthClient: {
     type: Schema.Types.ObjectId,
     ref: 'OAuthClient',
+    required: true,
   },
 })
 
