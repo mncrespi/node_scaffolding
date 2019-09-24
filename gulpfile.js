@@ -1,6 +1,6 @@
 import gulp from 'gulp'
 import gulpLoadPlugins from 'gulp-load-plugins'
-import path from 'path'
+// import path from 'path'
 import runSequence from 'run-sequence'
 
 const plugins = gulpLoadPlugins()
