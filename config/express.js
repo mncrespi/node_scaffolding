@@ -1,18 +1,20 @@
-import APIError from '../server/helpers/APIError.js'
 import bodyParser from 'body-parser'
 import compress from 'compression'
-import config from './env/index.js'
 import cookieParser from 'cookie-parser'
 import cors from 'cors'
 import express from 'express'
 import expressValidation from 'express-validation'
-import expressWinston from 'express-winston'
 import helmet from 'helmet'
 import httpStatus from 'http-status'
 import logger from 'morgan'
 import methodOverride from 'method-override'
+
+import config from './env/index.js'
+import APIError from '../server/helpers/APIError.js'
 import routes from '../server/routes/index.js'
-import winstonInstance from './winston.js'
+
+// TODO: Refactor Logger use: debug; morgan; winston
+// import winstonInstance from './winston.js'
 
 const app = express()
 
@@ -39,14 +41,15 @@ app.use(cors())
 
 // enable detailed API logging in dev env
 if (config.env === 'development') {
-  expressWinston.requestWhitelist.push('body')
-  expressWinston.responseWhitelist.push('body')
-  app.use(expressWinston.logger({
-    winstonInstance,
-    meta: true,   // optional: log meta data about request (defaults to true)
-    msg: 'HTTP {{req.method}} {{req.url}} {{res.statusCode}} {{res.responseTime}}ms',
-    colorStatus: true,   // Color the status code (default green, 3XX cyan, 4XX yellow, 5XX red).
-  }))
+  // TODO: Dev Logger
+  // expressWinston.requestWhitelist.push('body')
+  // expressWinston.responseWhitelist.push('body')
+  // app.use(expressWinston.logger({
+  //   winstonInstance,
+  //   meta: true,   // optional: log meta data about request (defaults to true)
+  //   msg: 'HTTP {{req.method}} {{req.url}} {{res.statusCode}} {{res.responseTime}}ms',
+  //   colorStatus: true,   // Color the status code (default green, 3XX cyan, 4XX yellow, 5XX red).
+  // }))
 }
 
 // mount all routes on /api path
@@ -74,9 +77,10 @@ app.use((req, res, next) => {
 
 // log error in winston transports except when executing test suite
 if (config.env !== 'test') {
-  app.use(expressWinston.errorLogger({
-    winstonInstance,
-  }))
+  // TODO: Dev Test
+  // app.use(expressWinston.errorLogger({
+  //   winstonInstance,
+  // }))
 }
 
 // error handler, send stacktrace only during development
