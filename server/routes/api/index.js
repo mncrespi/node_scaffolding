@@ -1,8 +1,8 @@
 import express from 'express'
-import userRoutes from './user'
-import authRoutes from './auth'
+import userRoutes from './user.js'
+import authRoutes from './auth.js'
 import expressJwt from 'express-jwt'
-import config from '../../../config/env'
+import config from '../../../config/env/index.js'
 
 
 const router = express.Router()  	// eslint-disable-line new-cap

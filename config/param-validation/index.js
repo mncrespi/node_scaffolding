@@ -1,6 +1,6 @@
 /** API Validations */
-import apiUsers from './api/users'
-import apiAuth from './api/auth'
+import apiUsers from './api/users.js'
+import apiAuth from './api/auth.js'
 
 
 export default {

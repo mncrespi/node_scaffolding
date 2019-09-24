@@ -2,7 +2,7 @@ import bcrypt from 'bcrypt'
 import moment from 'moment'
 import mongoose from 'mongoose'
 import Promise from 'bluebird'
-import APIError from '../helpers/APIError'
+import APIError from '../helpers/APIError.js'
 
 
 const Schema = mongoose.Schema

@@ -1,8 +1,8 @@
-import APIError from '../helpers/APIError'
-import config from '../../config/env'
+import APIError from '../helpers/APIError.js'
+import config from '../../config/env/index.js'
 import jwt from 'jsonwebtoken'
-import logger from '../../config/winston'
-import User from '../models/user'
+import logger from '../../config/winston.js'
+import User from '../models/user.js'
 
 
 /**

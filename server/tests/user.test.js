@@ -2,9 +2,9 @@ import request from 'supertest-as-promised'
 import httpStatus from 'http-status'
 import chai from 'chai'
 import { expect, } from 'chai'
-import app from '../../index'
+import app from '../../index.js'
 import jwt from 'jsonwebtoken'
-import config from '../../config/env'
+import config from '../../config/env/index.js'
 
 chai.config.includeStack = true
 

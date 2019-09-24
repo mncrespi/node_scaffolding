@@ -1,7 +1,7 @@
-import APIError from '../server/helpers/APIError'
+import APIError from '../server/helpers/APIError.js'
 import bodyParser from 'body-parser'
 import compress from 'compression'
-import config from './env'
+import config from './env/index.js'
 import cookieParser from 'cookie-parser'
 import cors from 'cors'
 import express from 'express'
@@ -11,8 +11,8 @@ import helmet from 'helmet'
 import httpStatus from 'http-status'
 import logger from 'morgan'
 import methodOverride from 'method-override'
-import routes from '../server/routes'
-import winstonInstance from './winston'
+import routes from '../server/routes/index.js'
+import winstonInstance from './winston.js'
 
 const app = express()
 

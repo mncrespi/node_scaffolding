@@ -1,5 +1,5 @@
-import APIError from '../helpers/APIError'
-import User from '../models/user'
+import APIError from '../helpers/APIError.js'
+import User from '../models/user.js'
 import moment from 'moment'
 
 
