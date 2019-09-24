@@ -1,28 +1,35 @@
 import Promise from 'bluebird'
 import mongoose from 'mongoose'
+import dotenv from './config/dotenv.js'
 import config from './config/env/index.js'
 import app from './config/express.js'
 import logger from './config/winston.js'
 
+// Enviroments
+if (dotenv.error) {
+	logger.log('error', 'Enviroments::Fail to load enviroments')
+	throw result.error
+}
+
 // promisify mongoose
 Promise.promisifyAll(mongoose)
 
+// TODO: Move to mongo config
 // connect to mongo db
-mongoose.connect(config.db, {
-	keepAlive: true,
-	useNewUrlParser: true,
-	useCreateIndex: true,
-	useUnifiedTopology: true,
-	// socketTimeoutMS: 45000, // Close sockets after 45 seconds of inactivity
-	// useFindAndModify: false,
-	// autoIndex: false, // Don't build indexes
-	// reconnectTries: Number.MAX_VALUE, // Never stop trying to reconnect
-	// reconnectInterval: 500, // Reconnect every 500ms
-	// poolSize: 10, // Maintain up to 10 socket connections
-	// // If not connected, return errors immediately rather than waiting for reconnect
-	// bufferMaxEntries: 0,
-	// connectTimeoutMS: 10000, // Give up initial connection after 10 seconds
-	// family: 4, // Use IPv4, skip trying IPv6
+mongoose.connect(config.mongo.host, {
+	keepAlive: config.mongo.keepAlive,
+	useNewUrlParser: config.mongo.useNewUrlParser,
+	// socketTimeoutMS: config.mongo.socketTimeoutMS,
+	useCreateIndex: config.mongo.useCreateIndex,
+	useUnifiedTopology: config.mongo.useUnifiedTopology,
+	// useFindAndModify: config.mongo.useFindAndModify,
+	// autoIndex: config.mongo.autoIndex,
+	reconnectTries: config.mongo.reconnectTries,
+	reconnectInterval: config.mongo.reconnectInterval,
+	// poolSize: config.mongo.poolSize
+	// bufferMaxEntries: config.mongo.bufferMaxEntries,
+	// connectTimeoutMS: config.mongo.connectTimeoutMS,
+	// family: config.mongo.family,
 }).then(() => {
 	logger.info('Mongoose Connect OK')
 }).catch(() => {

@@ -7,11 +7,11 @@
   "private": false,
   "type": "module",
   "engines": {
-    "node": ">=6.x.x",
-    "npm": ">=3.x.x"
+    "node": ">=12.x.x",
+    "npm": ">=6.x.x"
   },
   "scripts": {
-    "start": "node index.js --experimental-modules",
+    "start": "nodemon --experimental-modules index.js",
     "build": "gulp",
     "lint": "gulp lint",
     "test": "gulp mocha",
@@ -40,6 +40,7 @@
     "cookie-parser": "^1.4.4",
     "cors": "^2.8.5",
     "debug": "^4.1.1",
+    "dotenv": "^8.1.0",
     "express": "^4.17.1",
     "express-jwt": "^5.3.1",
     "express-validation": "^1.0.2",

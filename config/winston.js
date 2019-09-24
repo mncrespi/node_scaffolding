@@ -11,7 +11,7 @@ export default new winston.Logger({
       prettyPrint: config.logger.prettyPrint,
     }),
     new (winston.transports.File)({
-      filename: config.logger.logFile,
+      filename: config.logger.file,
     }),
   ],
 })

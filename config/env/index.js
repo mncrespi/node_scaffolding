@@ -1,15 +1,8 @@
-// import path from 'path'
 import _ from 'lodash'
+import defaults from './defaults.js'
+import enviroments from './enviroments.js'
 
-// const env = process.env.NODE_ENV || 'development'
-// const config = require(`./${env}`)
-import config from './development.js'
-
-
-const defaults = {
-  // root: path.dirname(process.cwd()),
-}
-
-_.assign(config, defaults)
+// Merge Config's
+const config = _.assign(defaults, enviroments)
 
 export default config
