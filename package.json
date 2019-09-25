@@ -15,6 +15,7 @@
     "eslint": "eslint .",
     "eslint:fix": "eslint --fix .",
     "gulp:lint": "gulp lint",
+    "gulp:lintfix": "LINT_FIX=true gulp lint",
     "gulp:test": "gulp mocha",
     "commit": "git-cz"
   },
@@ -66,6 +67,7 @@
     "gulp": "^4.0.2",
     "gulp-env": "^0.4.0",
     "gulp-eslint": "^6.0.0",
+    "gulp-if": "^3.0.0",
     "gulp-load-plugins": "^1.5.0",
     "gulp-mocha": "^6.0.0",
     "gulp-newer": "^1.4.0",
