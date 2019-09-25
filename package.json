@@ -12,10 +12,8 @@
   },
   "scripts": {
     "start": "nodemon --experimental-modules index.js",
-    "eslint": "eslint .",
-    "eslint:fix": "eslint --fix .",
-    "gulp:lint": "gulp lint",
-    "gulp:lintfix": "LINT_FIX=true gulp lint",
+    "lint": "gulp lint",
+    "lint:fix": "LINT_FIX=true gulp lint",
     "gulp:test": "gulp mocha",
     "commit": "git-cz"
   },
