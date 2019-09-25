@@ -44,4 +44,4 @@ function lint() {
 }
 
 exports.default = defaultTask
-exports.linter = lint
+exports.lint = lint
